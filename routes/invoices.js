@@ -33,8 +33,8 @@ router.get('/:id', async (req, res, next) => {
 // Create a new invoice
 router.post('/', async (req, res, next) => {
     try {
-        const {id, name, description} = req.body;
-        const results = await db.query(`INSERT INTO invoices (id, name, description) VALUES ($1, $2, $3) RETURNING *`, [id, name, description])
+        const {comp_code, amt} = req.body;
+        const results = await db.query(`INSERT INTO invoices (comp_code, amt) VALUES ($1, $2) RETURNING *`, [comp_code, amt])
         return res.status(201).json({invoice: results.rows[0]})
     } catch (e) {
         next(e)
