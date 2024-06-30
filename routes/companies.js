@@ -33,7 +33,9 @@ router.get('/:code', async (req, res, next) => {
 // Create a new company
 router.post('/', async (req, res, next) => {
     try {
-
+        const {code, name, description} = req.body;
+        const results = await db.query(`INSERT INTO companies (code, name, description) VALUES ($1, $2, $3) RETURNING *`, [code, name, description])
+        return res.status(201).json({company: results.rows[0]})
     } catch (e) {
         next(e)
     }
