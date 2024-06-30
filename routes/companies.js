@@ -21,7 +21,7 @@ router.get('/:code', async (req, res, next) => {
         const {code} = req.params;
         const results = await db.query(`SELECT * FROM companies WHERE code = $1`, [code]);
         if (results.rows.length === 0) {
-            return next(new ExpressError(`Can not find a company with code of ${code}`))
+            return next(new ExpressError(`Can not find a company with code of ${code}`, 404))
         }
 
         return res.json({company: results.rows[0]})
@@ -48,7 +48,7 @@ router.put('/:code', async (req, res, next) => {
         const {name, description} = req.body;
         const results = await db.query(`UPDATE companies SET name = $1, description = $2 WHERE code = $3 RETURNING *`, [name, description, code])
         if (results.rows.length === 0) {
-            return next(new ExpressError(`Can not update company with code of ${code}`))
+            return next(new ExpressError(`Can not update company with code of ${code}`, 404))
         }
 
         return res.json({company: results.rows[0]})
@@ -66,7 +66,7 @@ router.delete('/:code', async (req, res, next) => {
             await db.query(`DELETE FROM companies WHERE code = $1`, [code])
             return res.json({status: 'deleted'})
         } else {
-            throw new ExpressError(`Can not delete company with code of ${code}`)
+            throw new ExpressError(`Can not delete company with code of ${code}`, 404)
 
         }
 
