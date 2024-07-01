@@ -20,12 +20,17 @@ router.get('/:code', async (req, res, next) => {
     try {
         const {code} = req.params;
         const company = await db.query(`SELECT * FROM companies WHERE code = $1`, [code]);
-        const invoices = await db.query(`SELECT * FROM invoices WHERE comp_code = $1`, [code])
         if (company.rows.length === 0) {
             return next(new ExpressError(`Can not find a company with code of ${code}`, 404))
         }
+        const foundInvoices = await db.query(`SELECT * FROM invoices WHERE comp_code = $1 ORDER BY id`, [code])
+        const invoices = foundInvoices.rows.map((value, index, array) => {
+            return value.id
+        })
 
-        return res.json({company: {...company.rows[0], invoices: invoices.rows}})
+
+
+        return res.json({company: {...company.rows[0], invoices}})
     } catch (e) {
         next(e)
     }
